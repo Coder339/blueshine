@@ -1,6 +1,7 @@
 import React,{useState,useEffect} from 'react';
 import { StyleSheet, Text, View,TouchableOpacity,Image,Alert } from 'react-native'
 import ScrollContainer from '../components/common/scrollcontainer';
+import ImageContainer from '../components/common/imagecontainer';
 import { TextInput } from 'react-native-gesture-handler';
 import { useSelector, useDispatch } from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
@@ -13,6 +14,7 @@ import {setData} from '../config/storage';
 import {API_URL} from '../config/baseurl';
 import Loader from '../components/common/loader';
 import * as actions from '../redux/actiontypes';
+import API from '../config/api';
 
 export default function Login() {
 
@@ -31,6 +33,7 @@ export default function Login() {
         isValidPassword:true,
         isVisible:false,
         check_textInputChange:false,
+        isGoogleLogo:false,
     })
     
     const navigation = useNavigation();
@@ -76,6 +79,11 @@ export default function Login() {
         setUserData({...data,isHidden:!data.isHidden})
     }
 
+    const onGoogleButtonPress=()=> {
+
+        
+        // dispatch(SocialSignIn())
+    }
 
 
     const Login = async () => {
@@ -89,46 +97,12 @@ export default function Login() {
         }
             
         setLoading(true)
-        
-        let info = {
-            method: 'POST',
-            headers: {
-            //   'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                email: data.username,
-                password: data.password,
-            })
-        }
 
-        const resp = await fetch('http://winedrum.herokuapp.com/api/user/login',info)
-                            .then(res => res.json()
-                            .then(res => {
-                                var data={
-                                    status:200,
-                                    body: res
-                                }
-                                setLoading(false)
-                                return data
-                                // setData('userToken',JSON.stringify(res.access_token))
-                                // AppConstant.token = res.access_token;
-                                // navigation.replace('App')
-                            }))
-                            .catch((error) => {
-                                console.error(error)
-                                setLoading(false)
-                                return { body: { status: 400, Message: 'Sorry, something went wrong, please try again in sometime.' } }
-                            })
+        let info = JSON.stringify({
+            email:data.username,
+            password:data.password,
+        })
 
-        console.log('resp',resp)
-        // dispatch(signIn(resp))
-        if (resp.status==200){
-            dispatch({type:actions.LOGIN_SUCCESS,payload:resp})
-        }
-        else{
-            dispatch({type:actions.LOGIN_FAILURE,message:resp.body.Message})
-        }
 
         // {netInfo.isConnected ?
 
@@ -138,21 +112,42 @@ export default function Login() {
         //         {text: 'Okay'}
         //     ]);
         // }
+
+        const resp = await API('user/login','POST',info)
+        
+        if (resp.status==200){
+            setLoading(false)
+            let response = resp.body.access_token
+            console.log('status',response)
+            if (response){     
+                dispatch({type:actions.LOGIN_SUCCESS,payload:resp})
+            }
+            else{
+                // alert(resp.body)
+                dispatch({type:actions.LOGIN_FAILURE,message:resp.body})
+            }
+        }
+        else if(resp.body.status==400){
+            setLoading(false)
+            dispatch({type:actions.LOGIN_FAILURE,message:resp.body.Message})
+        }
+
         
 
     }
 
     useEffect(() => {
+        console.log('state...',state)
         if (state.case === actions.LOGIN_SUCCESS){
             console.log('RESPONSE',state)
-            console.log('token',state.userData.body.access_token)
+            console.log('token',JSON.stringify(state.userData.body.access_token))
             setData('userToken',JSON.stringify(state.userData.body.access_token))
-            AppConstant.token = state.userData.body.access_token;
+            AppConstant.token = JSON.stringify(state.userData.body.access_token);
             navigation.replace('App')
             setLoading(false)
         }
         else if (state.case === actions.LOGIN_FAILURE) {
-            Alert.alert('ATTENTION !', state.Message, [
+            Alert.alert('ATTENTION !', state.message, [
                 {text: 'Okay'}
             ]);
             setLoading(false)
@@ -164,6 +159,7 @@ export default function Login() {
         
         <ScrollContainer style={styles.container}>
             <Loader visible={loading}/>
+            <ImageContainer image={loginBackground}/>
             <Text style={styles.logo}>B L U E S H I N E</Text>
             <View style={styles.loginContainer}>
                 
@@ -237,7 +233,30 @@ export default function Login() {
                 textStyle={{color:colors.white}}
                 onPress={Login}
             />
-            
+            <View style={{flexDirection:'row',marginTop:scaleWidth('1%'),justifyContent:'center',alignItems:'center'}}>
+                <Text style={{color:colors.white}}>Dont have account ? </Text>
+                <Text style={styles.register} onPress={()=>navigation.navigate('Signup')}>Register</Text>
+            </View>
+            <Text style={styles.googleText}>OR</Text>
+            {data.isGoogleLogo &&
+
+                <Animatable.View 
+                    animation='fadeInLeft' 
+                    duration={500}
+                    >    
+                    <TouchableOpacity onPress={onGoogleButtonPress}>
+                        {googleLogo}
+                    </TouchableOpacity>
+                </Animatable.View>
+            }
+            {!data.isGoogleLogo &&
+
+                <TouchableOpacity 
+                  onPress={()=>setUserData({...data,isGoogleLogo:!data.isGoogleLogo})}
+                  style={styles.googleTextContainer}>
+                    <Text style={styles.googleText}>Sign in with Google</Text>
+                </TouchableOpacity>
+            }
         </ScrollContainer>
         
     )
@@ -248,13 +267,13 @@ const styles = StyleSheet.create({
         // flexGrow:1,
         backgroundColor:colors.white,
         alignItems:'center',
-        height:scaleHeight('100%')
+        height:scaleHeight('90%')
     },
     logo:{
         fontFamily:fonts.FasterOneRegular,
         marginVertical:scaleHeight('5%'),
         color:colors.appColor,
-        fontSize:scaleWidth('5%')
+        fontSize:scaleWidth('8%')
     },
     loginContainer:{
         // flex:1,
@@ -274,7 +293,7 @@ const styles = StyleSheet.create({
         fontFamily:fonts.MontserratRegular
     },
     label:{
-        color:colors.black,
+        color:colors.white,
         fontSize:scaleWidth('4%'),
         fontFamily:fonts.MontserratBold,
     },
@@ -289,7 +308,7 @@ const styles = StyleSheet.create({
     },
     inputBorder:{
         borderWidth:1,
-        borderColor:colors.black
+        borderColor:colors.whiteFade
     },
     loginButton:{
         // flex:1,
@@ -297,16 +316,17 @@ const styles = StyleSheet.create({
         height:scaleHeight('8%'),
         // borderRadius:moderateScale(5),
         backgroundColor:colors.black,  
-        marginTop:scaleHeight('32%'),
+        marginTop:scaleHeight('30%'),
     },
     register:{
-        color:colors.wine1,
+        color:colors.appColor,
         fontWeight:'bold',
+        fontSize:scaleWidth('5%')
     },
     errorMsg:{
         fontFamily:fonts.MontserratRegular,
         color:colors.error,
-        fontSize:scaleWidth('3%'),
+        fontSize:scaleWidth('5%'),
     },
     errorContainer:{
         flexDirection:'row',

@@ -28,7 +28,7 @@ export default function Splash() {
     return (
         <View style={styles.splash}>
             <View style={styles.circle}>
-                <Text style={styles.drag}>Let's Go</Text>
+                <Text style={styles.drag}>B L U E S H I N E</Text>
             </View>
         </View>
     )
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     },
     circle: {
         // flex:1,
-        backgroundColor:colors.error,
+        backgroundColor:colors.appColor,
         width: CIRCLE_RADIUS * 5,
         height: CIRCLE_RADIUS * 5,
         borderRadius: CIRCLE_RADIUS * 2.5,

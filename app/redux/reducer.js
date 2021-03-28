@@ -13,7 +13,8 @@ export const reducer=(state=[],action)=>{
             return{
                 ...state,
                 case:action.type,
-                userData:''
+                userData:'',
+                message:''
             }
         case actions.GET_PRODUCT_SUCCESS:
             return{
@@ -21,18 +22,31 @@ export const reducer=(state=[],action)=>{
                 case:action.type,
                 products:action.payload
             }
+        // case actions.GET_PRODUCTS_FAILURE:
+        //     return {
+        //         ...state,
+        //         case: action.type,
+        //         products: action.payload,
+
+        //     }
         case actions.SIGN_UP_SUCCESS:
             return{
                 ...state,
                 case:action.type,
                 userData:action.payload
             }
-        case actions.SIGN_UP_FAILURE:
-            return{
+        // case actions.SIGN_UP_FAILURE:
+        //     return{
+        //         ...state,
+        //         case:action.type,
+        //         userData:action.payload
+        //     }
+        default:
+            return {
                 ...state,
-                case:action.type,
-                userData:action.payload
+                case: action.type,
+                message: action.message,
+
             }
-        default: return state
     }
 }
