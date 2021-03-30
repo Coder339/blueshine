@@ -15,14 +15,14 @@ export default function Test() {
             headers: {
               'Authorization': `Bearer ${AppConstant.token}`,
               'Accept': 'application/json',
-              'Content-Type': 'application/json'
+            //   'Content-Type': 'application/json'
             }
         }
         console.log('info',info)
         fetch('https://winedrum.herokuapp.com/api/product',info)
         .then(res => res.text())
         .then(res => {
-            // console.log('RESPONSE',res)
+            console.log('RESPONSE',res)
             // setData(res)
             setLoading(false)
         })

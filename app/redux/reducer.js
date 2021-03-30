@@ -22,7 +22,7 @@ export const reducer=(state=[],action)=>{
                 case:action.type,
                 products:action.payload
             }
-        // case actions.GET_PRODUCTS_FAILURE:
+        // case actions.GET_PRODUCT_FAILURE:
         //     return {
         //         ...state,
         //         case: action.type,

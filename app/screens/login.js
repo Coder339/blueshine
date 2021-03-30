@@ -132,17 +132,15 @@ export default function Login() {
             dispatch({type:actions.LOGIN_FAILURE,message:resp.body.Message})
         }
 
-        
-
     }
 
     useEffect(() => {
         console.log('state...',state)
         if (state.case === actions.LOGIN_SUCCESS){
             console.log('RESPONSE',state)
-            console.log('token',JSON.stringify(state.userData.body.access_token))
-            setData('userToken',JSON.stringify(state.userData.body.access_token))
-            AppConstant.token = JSON.stringify(state.userData.body.access_token);
+            console.log('token',state.userData.body.access_token)
+            setData('userToken',state.userData.body.access_token)
+            AppConstant.token = state.userData.body.access_token;
             navigation.replace('App')
             setLoading(false)
         }
@@ -272,8 +270,8 @@ const styles = StyleSheet.create({
     logo:{
         fontFamily:fonts.FasterOneRegular,
         marginVertical:scaleHeight('5%'),
-        color:colors.appColor,
-        fontSize:scaleWidth('8%')
+        color:colors.white,
+        fontSize:scaleWidth('7%')
     },
     loginContainer:{
         // flex:1,
@@ -282,7 +280,7 @@ const styles = StyleSheet.create({
     },
     input:{
         // backgroundColor:'rgba(255,255,255,0.3)',
-        color:colors.black,
+        color:colors.white,
         fontFamily:fonts.MontserratRegular,
         height:scaleHeight('7%')
     },
@@ -315,7 +313,7 @@ const styles = StyleSheet.create({
         width:scaleWidth('80%'),
         height:scaleHeight('8%'),
         // borderRadius:moderateScale(5),
-        backgroundColor:colors.black,  
+        backgroundColor:colors.whiteFade,  
         marginTop:scaleHeight('30%'),
     },
     register:{
@@ -326,7 +324,7 @@ const styles = StyleSheet.create({
     errorMsg:{
         fontFamily:fonts.MontserratRegular,
         color:colors.error,
-        fontSize:scaleWidth('5%'),
+        fontSize:scaleWidth('4%'),
     },
     errorContainer:{
         flexDirection:'row',

@@ -34,7 +34,7 @@ export default function Splash() {
     )
 }
 
-let CIRCLE_RADIUS = 30;
+let CIRCLE_RADIUS = scaleWidth('10%');
 const styles = StyleSheet.create({
     splash:{
         flex:1,

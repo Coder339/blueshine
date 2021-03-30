@@ -12,10 +12,14 @@ import {colors, loginBackground,user,lock,eyeoff,eyeon,logo_global,fonts,checkci
 import AppButton from '../components/appbutton';
 import ErrorMsg from '../components/common/errormsg';
 import * as Animatable from 'react-native-animatable';
+import * as actions from '../redux/actiontypes';
 import {useNetInfo} from "@react-native-community/netinfo";
+import API from '../config/api';
+import Loader from '../components/common/loader';
 
 export default function Signup() {
-    // const state = useSelector(state => state).reducer;
+    const state = useSelector(state => state);
+    const [loading,setLoading] = useState(false)
 
     const netInfo = useNetInfo();
 
@@ -140,15 +144,8 @@ export default function Signup() {
         setIsHidden(newArr)
     }
 
-    const Register=()=>{
+    const Register=async()=>{
 
-        var formdata = {
-            email: data.email,
-            password: data.password,
-            // device_type: Platform.OS === 'ios' ? 1 : 2,
-            // device_token: token,
-            // device_info: Platform.OS.toUpperCase() + ' Device'
-        }
 
         if ( data.fullName.length == 0 || data.email.length == 0 || data.password.length == 0 || data.confirmPassword.length == 0 ) {
             Alert.alert('Wrong Input!', 'Name/Email/Password/confirmPassword fields cannot be empty.', [
@@ -164,19 +161,72 @@ export default function Signup() {
             return
         }
 
-        {netInfo.isConnected ?
+        setLoading(true)
 
-            // dispatch(SignUp(formdata))
-            alert('signup successfully')
-            :
-            Alert.alert('Network issue :(', 'Please Check Your Network !', [
-                {text: 'Okay'}
-            ]);
+        let info = JSON.stringify({
+            name:data.fullName,
+            email:data.email,
+            password:data.password,
+        })
+
+        const resp = await API('user/register','POST',info)
+        
+        if (resp.status==200){
+            setLoading(false)
+            let response = resp.body
+            console.log('status',response)
+            if (response){     
+                dispatch({type:actions.SIGN_UP_SUCCESS,payload:resp})
+            }
+            else{
+                // alert(resp.body)
+                dispatch({type:actions.SIGN_UP_FAILURE,message:resp.body})
+            }
         }
+        else if(resp.body.status==400){
+            setLoading(false)
+            dispatch({type:actions.SIGN_UP_FAILURE,message:resp.body.Message})
+        }
+
+        // {netInfo.isConnected ?
+
+        //     // dispatch(SignUp(formdata))
+        //     alert('signup successfully')
+        //     :
+        //     Alert.alert('Network issue :(', 'Please Check Your Network !', [
+        //         {text: 'Okay'}
+        //     ]);
+        // }
     }
+
+    useEffect(() => {
+        console.log('state...',state)
+        if (state.case === actions.SIGN_UP_SUCCESS){
+            console.log('RESPONSE',state)
+            console.log('res',state.userData.status)
+            Alert.alert('WELCOME :)', 'SUCCESSFULLY REGISTRED !', [
+                {
+                    text: 'Okay',
+                    onPress: () => navigation.navigate('SignIn'),
+                }
+            ]);
+            // navigation.replace('App')
+            setLoading(false)
+        }
+        else if (state.case === actions.SIGN_UP_FAILURE) {
+            Alert.alert('ATTENTION !', state.message, [
+                {
+                    text: 'Okay',
+                }
+            ]);
+            setLoading(false)
+            // toast.show(state.message)
+        }
+    }, [state])
 
     return (
         <ScrollContainer style={styles.container}>
+            <Loader visible={loading}/>
             <ImageContainer image={loginBackground}/>
             <Text style={styles.logo}>B L U E S H I N E</Text>
             <View style={styles.signupContainer}>
@@ -293,7 +343,7 @@ export default function Signup() {
             <AppButton 
               text='SIGNUP' 
               style={styles.signupButton} 
-              textStyle={{color:colors.appColor}}
+              textStyle={{color:colors.white}}
               onPress={Register}
             />
             <View style={{flexDirection:'row'}}>
@@ -315,7 +365,7 @@ const styles = StyleSheet.create({
         fontFamily:fonts.FasterOneRegular,
         marginVertical:scaleHeight('5%'),
         color:colors.white,
-        fontSize:scaleWidth('5%')
+        fontSize:scaleWidth('7%')
     },
     signupContainer:{
         height:scaleHeight('50%')

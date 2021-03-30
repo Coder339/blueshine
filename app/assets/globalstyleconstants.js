@@ -60,19 +60,25 @@ export const eyeoff = require('./images/eye-off.png')
 export const eyeon = require('./images/eye-outline.png')
 export const logo_top = require('./images/logo_top.png')
 export const checkcircle = require('./images/check-circle.png')
+export const goback = require('./images/left-arrow.png')
+export const account = require('./images/account.png')
+export const privacy = require('./images/padlock.png')
+export const notifications = require('./images/bell.png')
+export const about = require('./images/info.png')
+export const logout = require('./images/logout.png')
 
 
 const iconImage = {
         width:scaleWidth('6.5%'),
         height:scaleWidth('6.5%')
 }
-export const activeHome = <Image source={require('../assets/images/beer.png')} style={iconImage}/>
-export const inactiveHome = <Image source={require('../assets/images/beer.png')} style={iconImage}/>
-export const activeSettings = <Image source={require('../assets/images/settings.png')} style={iconImage}/>
+export const activeHome = <Image source={require('../assets/images/active-bottle.png')} style={iconImage}/>
+export const inactiveHome = <Image source={require('../assets/images/bottle.png')} style={iconImage}/>
+export const activeSettings = <Image source={require('../assets/images/active-settings.png')} style={iconImage}/>
 export const inactiveSettings = <Image source={require('../assets/images/settings.png')} style={iconImage}/>
-export const activeCart = <Image source={require('../assets/images/cart.png')} style={iconImage}/>
+export const activeCart = <Image source={require('../assets/images/active-cart.png')} style={iconImage}/>
 export const inactiveCart = <Image source={require('../assets/images/cart.png')} style={iconImage}/>
-export const activeFav = <Image source={require('../assets/images/favorites.png')} style={iconImage}/>
+export const activeFav = <Image source={require('../assets/images/active-favorites.png')} style={iconImage}/>
 export const inactiveFav = <Image source={require('../assets/images/favorites.png')} style={iconImage}/>
 export const activeIce = <Image source={require('../assets/images/ice.png')} style={iconImage}/>
 export const inactiveIce = <Image source={require('../assets/images/ice.png')} style={iconImage}/>
